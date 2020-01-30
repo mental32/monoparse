@@ -17,15 +17,13 @@ grammars.
 ### Simple calculator
 
 ```py
-from operator import rshift
-
-from monoparse import Parser, OneOrMore, Silent, Maybe, ASCII_DIGITS
+from monoparse import Parser, OneOrMore, Immutable, Silent, Maybe, ASCII_DIGITS
 
 # "Whitespaces" is a rule that matches one or more space characters
 #
 # We also mark it as silent because we don't want to capture any
 # Whitespace products as they are useless to a calculator...
-Whitespaces = Silent(OneOrMore(" "))
+Whitespaces = Immutable(Silent(OneOrMore(" ")))
 
 # "Number" is a rule that uses an already provided rule "ASCII_DIGITS"
 #
@@ -42,12 +40,9 @@ Operator = OneOf("+-*/")
 # "Base" is our starting rule.
 Base = (
     Number
-    >> Whitespaces
-    >> Maybe(OneOrMore(Operator >> Whitespaces >> Number))
+    >> Maybe(Whitespaces >> OneOrMore(Operator >> Whitespaces >> Number))
 )
 
 ast: List[Union[Number, Operator]]
-
-# Any two argument operator can be used as a joining operator, we must specify explicitly.
-ast = Base.parse("89 * 3 / -735", joined_by=rshift)
+ast = Base.parse("89 * 3 / -735")
 ```
