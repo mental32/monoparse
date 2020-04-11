@@ -36,7 +36,7 @@ class Atom:
         return type(self)(
             body=self.body,
             optional=self.optional,
-            frozen=self.frozen,
+            frozen=False,
             capturable=self.capturable,
             attempt_coerce=self.attempt_coerce,
         )
