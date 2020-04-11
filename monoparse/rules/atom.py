@@ -31,14 +31,13 @@ class Atom:
             fmt = ""
 
         parts = [alt.compile() for alt in self.alternatives]
-
         if parts:
-            if fmt:
-                parts.insert(0, fmt)
-            fmt = f'({"|".join(parts)})'
+            total = ((fmt and [fmt]) or []) + parts
+            fmt = f'({"|".join(total)})'
 
-        for Atom in self.followed_by:
-            fmt += Atom.compile()
+        for atom in self.followed_by:
+            assert isinstance(atom, Atom), repr(atom)
+            fmt += atom.compile()
 
         if self.followed_by:
             if not self.capturable:
