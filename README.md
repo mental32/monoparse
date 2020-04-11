@@ -10,7 +10,8 @@
 ## [Brief](#Index)
 
 Monoparse is an attempt at providing an API to be used for building language
-grammars.
+grammars that can compile to regular expressions or parse arbitrary source
+strings.
 
 ## [Examples](#Index)
 
