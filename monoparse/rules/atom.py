@@ -26,14 +26,20 @@ class Atom:
             else:
                 raise TypeError(f"Unable to coerce object to Atom form ({other=!r})")
 
-        if self.frozen:
-            atom = type(self)(self.body, self.optional, self.frozen)
-        else:
-            atom = self
+        atom = self.copy() if self.frozen else self
 
         return (atom, other)
 
     # Public
+
+    def copy(self) -> "Atom":
+        return type(self)(
+            body=self.body,
+            optional=self.optional,
+            frozen=self.frozen,
+            capturable=self.capturable,
+            attempt_coerce=self.attempt_coerce,
+        )
 
     def compile(self) -> str:
         if self.body:
