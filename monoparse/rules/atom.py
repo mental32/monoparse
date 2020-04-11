@@ -11,6 +11,7 @@ class Atom:
     body: Union["Atom", str]
     optional: bool = field(default=False)
     frozen: bool = field(default=False)
+    capturable: bool = field(default=True)
 
     alternatives: List["Atom"] = field(default_factory=list, repr=False)
     followed_by: List["Atom"] = field(default_factory=list, repr=False)
@@ -40,6 +41,12 @@ class Atom:
             fmt += Atom.compile()
 
         if self.followed_by:
+            if not self.capturable:
+                return f"(?:{fmt})"
+            else:
+                return f"({fmt})"
+
+        if self.capturable:
             return f"({fmt})"
 
         return fmt
