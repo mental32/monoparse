@@ -1,7 +1,7 @@
 import re
 from operator import rshift
 from dataclasses import dataclass, field
-from typing import Callable, TypeVar, List, Union, Dict
+from typing import Callable, TypeVar, List, Union, Dict, Tuple
 
 __all__ = ("Atom",)
 
@@ -12,9 +12,26 @@ class Atom:
     optional: bool = field(default=False)
     frozen: bool = field(default=False)
     capturable: bool = field(default=True)
+    attempt_coerce: bool = field(default=True)
 
     alternatives: List["Atom"] = field(default_factory=list, repr=False)
     followed_by: List["Atom"] = field(default_factory=list, repr=False)
+
+    # Helpers
+
+    def _process(self, other: Union[Any, "Atom"]) -> Tuple[Atom, Atom]:
+        if not isinstance(other, Atom):
+            if self.attempt_coerce:
+                other = Atom(other)
+            else:
+                raise TypeError(f"Unable to coerce object to Atom form ({other=!r})")
+
+        if self.frozen:
+            atom = type(self)(self.body, self.optional, self.frozen)
+        else:
+            atom = self
+
+        return (atom, other)
 
     # Public
 
@@ -53,25 +70,11 @@ class Atom:
     # Overloaded
 
     def __or__(self, other):
-        if not isinstance(other, Atom):
-            other = Atom(other)
-
-        if self.frozen:
-            inst = type(self)(self.body, self.optional, self.frozen)
-            inst.alternatives.append(other)
-            return inst
-
-        self.alternatives.append(other)
-        return self
+        atom, other, = self._process(other)
+        atom.alternatives.append(other)
+        return atom
 
     def __rshift__(self, other):
-        if not isinstance(other, Atom):
-            other = Atom(other)
-
-        if self.frozen:
-            inst = type(self)(self.body, self.optional, self.frozen)
-            inst.followed_by.append(other)
-            return inst
-
-        self.followed_by.append(other)
-        return self
+        atom, other, = self._process(other)
+        atom.followed_by.append(other)
+        return atom
