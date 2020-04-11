@@ -1,7 +1,7 @@
 import re
 from operator import rshift
 from dataclasses import dataclass, field
-from typing import Callable, TypeVar, List, Union, Dict, Tuple
+from typing import Callable, TypeVar, List, Union, Dict, Tuple, Any
 
 __all__ = ("Atom",)
 
@@ -19,7 +19,7 @@ class Atom:
 
     # Helpers
 
-    def _process(self, other: Union[Any, "Atom"]) -> Tuple[Atom, Atom]:
+    def _process(self, other: Union[Any, "Atom"]) -> Tuple["Atom", "Atom"]:
         if not isinstance(other, Atom):
             if self.attempt_coerce:
                 other = Atom(other)
