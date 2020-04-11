@@ -12,8 +12,8 @@ class Atom:
     optional: bool = field(default=False)
     frozen: bool = field(default=False)
 
-    alternatives: List["Atom"] = field(init=False, default_factory=list, repr=False)
-    followed_by: List["Atom"] = field(init=False, default_factory=list, repr=False)
+    alternatives: List["Atom"] = field(default_factory=list, repr=False)
+    followed_by: List["Atom"] = field(default_factory=list, repr=False)
 
     # Public
 
